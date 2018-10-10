@@ -1,4 +1,5 @@
 # Bytom-JS-SDK
+[![npm version](https://img.shields.io/npm/v/bytom-js-sdk.svg?style=flat-square)](https://www.npmjs.com/package/bytom-js-sdk)
 
 ## Install
 
