@@ -58,7 +58,7 @@ transactionsApi.prototype.build = function(baseTransaction, actions, timeRange, 
  * @param {String} password - signature of the password.
  */
 transactionsApi.prototype.sign = function(transaction, password) {
-    return this.http.request("/sign-transaction", {transaction, password});
+    return this.http.request('/sign-transaction', {transaction, password});
 };
 
 /**
@@ -69,7 +69,7 @@ transactionsApi.prototype.sign = function(transaction, password) {
  * @param {String} rawTransaction - raw_transaction of signed transaction.
  */
 transactionsApi.prototype.submit = function(rawTransaction) {
-    return this.http.request("/submit-transaction", {raw_transaction: rawTransaction});
+    return this.http.request('/submit-transaction', {raw_transaction: rawTransaction});
 };
 
 /**
@@ -80,7 +80,7 @@ transactionsApi.prototype.submit = function(rawTransaction) {
  * @param {Object} transaction - builded transaction response.
  */
 transactionsApi.prototype.estimateGas = function(transaction) {
-    return this.http.request("estimate-transaction-gas", {transaction_template: transaction});
+    return this.http.request('estimate-transaction-gas', {transaction_template: transaction});
 };
 
 export default transactionsApi;

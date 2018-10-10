@@ -28,7 +28,7 @@ accountsApi.prototype.listAll = function() {
  * @param {String} accountId - id of account.
  */
 accountsApi.prototype.listAddressesById = function(accountId) {
-    return this.http.request("/list-addresses", {account_id: accountId});
+    return this.http.request('/list-addresses', {account_id: accountId});
 };
 
 /**
@@ -37,7 +37,7 @@ accountsApi.prototype.listAddressesById = function(accountId) {
  * @param {String} accountAlias - alias of account.
  */
 accountsApi.prototype.listAddressesByAlias = function(accountAlias) {
-    return this.http.request("/list-addresses", {account_alias: accountAlias});
+    return this.http.request('/list-addresses', {account_alias: accountAlias});
 };
 
 export default accountsApi;

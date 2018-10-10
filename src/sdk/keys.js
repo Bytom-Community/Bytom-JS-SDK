@@ -1,5 +1,5 @@
-import {createKey, resetKeyPassword} from "../wasm/func";
-import {getDB} from "../db/db";
+import {createKey, resetKeyPassword} from '../wasm/func';
+import {getDB} from '../db/db';
 
 function keysSDK() {
 }
@@ -23,7 +23,6 @@ keysSDK.prototype.resetKeyPassword = function(rootXPub, oldPassword, newPassword
                 getRequest.onsuccess = function (event) {
                     const cursor = event.target.result;
                     if(cursor && cursor.value.xpub === rootXPub) {
-                        console.log(cursor);
                         const updateData = cursor.value;
                         updateData.key = res.data;
                         const request = cursor.update(updateData);
@@ -31,14 +30,14 @@ keysSDK.prototype.resetKeyPassword = function(rootXPub, oldPassword, newPassword
                             resolve(true);
                         };
                         request.onerror = function() {
-                            reject(new Error("db update error"));
+                            reject(new Error('db update error'));
                         };
                     } else {
-                        reject(new Error("db update error: not found by rootXPub"));
+                        reject(new Error('db update error: not found by rootXPub'));
                     }
                 };
-                getRequest.onerror = function (event) {
-                    reject(new Error("db get error"));
+                getRequest.onerror = function () {
+                    reject(new Error('db get error'));
                 };
             }).catch(error => {
                 reject(error);
@@ -66,11 +65,11 @@ keysSDK.prototype.getKeyByXPub = function(xpub) {
                 if(e.target.result) {
                     resolve(e.target.result.key);
                 } else {
-                    reject(new Error("not found by XPub"));    
+                    reject(new Error('not found by XPub'));    
                 }
             };
-            getRequest.onerror = function(e) {
-                reject(new Error("db get error"));
+            getRequest.onerror = function() {
+                reject(new Error('db get error'));
             };
         }).catch(error => {
             reject(error);
@@ -95,7 +94,7 @@ keysSDK.prototype.create = function(alias, password) {
                 .get(normalizedAlias);
             getRequest.onsuccess = function (e) {
                 if (e.target.result) {
-                    reject(new Error("alias already exists"));
+                    reject(new Error('alias already exists'));
                     return;
                 }
                 let data = {};
@@ -111,18 +110,18 @@ keysSDK.prototype.create = function(alias, password) {
                     let request = db.transaction(['keys'], 'readwrite')
                         .objectStore('keys')
                         .add(dbData);
-                    request.onsuccess = function (event) {
+                    request.onsuccess = function () {
                         resolve({xpub:jsonData.xpub, alias: alias});
                     };
-                    request.onerror = function (event) {
-                        reject(new Error("db insert error"));
+                    request.onerror = function () {
+                        reject(new Error('db insert error'));
                     };
                 }).catch(error => {
                     reject(error);    
                 });
             };
-            getRequest.onerror = function (event) {
-                reject(new Error("db get error"));
+            getRequest.onerror = function () {
+                reject(new Error('db get error'));
             };
         }).catch(error => {
             reject(error);

@@ -1,7 +1,8 @@
+/*eslint-disable*/
 // Copyright 2018 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
+//see https://github.com/golang/go/wiki/WebAssembly
 export function LoadWasm() {
 	// Map web browser API and Node.js API to a single common API (preferring web standards over Node.js API).
 	if (typeof window !== "undefined") {

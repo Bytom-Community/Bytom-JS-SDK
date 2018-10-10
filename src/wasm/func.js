@@ -1,6 +1,6 @@
-import {LoadWasm} from "./go";
-import Bytom from "../index";
-import keysSDK from "../sdk/keys.js";
+import {LoadWasm} from './go';
+import Bytom from '../index';
+import keysSDK from '../sdk/keys.js';
 
 //wasm load val
 window.wasmIsLoad = false;
@@ -14,7 +14,7 @@ let funcReceived = new Promise(resolve => {
 
 window.setFuncOver = function() {
     AllFuncReceivedResolve();
-}
+};
 window.resetWasmStatus = function() {
     window.wasmIsLoad = false;
     window.wasmReceived = false;
@@ -39,7 +39,18 @@ window.getKeyByXPub = function (XPub) {
 export async function resetKeyPassword(data) {
     await init();
     let res = newWasmResult();
-    AllFunc.resetKeyPassword(data, res);
+    window.AllFunc.resetKeyPassword(data, res);
+    await res.wait;
+    if (res.hasOwnProperty('error')) {
+        throw new Error(res.error);
+    }
+    return res;
+}
+
+export async function signTransaction(data) {
+    await init();
+    let res = newWasmResult();
+    window.AllFunc.signTransaction(data, res);
     await res.wait;
     if (res.hasOwnProperty('error')) {
         throw new Error(res.error);
@@ -50,7 +61,7 @@ export async function resetKeyPassword(data) {
 export async function createAccountReceiver(data) {
     await init();
     let res = newWasmResult();
-    AllFunc.createAccountReceiver(data, res);
+    window.AllFunc.createAccountReceiver(data, res);
     await res.wait;
     if (res.hasOwnProperty('error')) {
         throw new Error(res.error);
@@ -61,7 +72,7 @@ export async function createAccountReceiver(data) {
 export async function createAccount(data) {
     await init();
     let res = newWasmResult();
-    AllFunc.createAccount(data, res);
+    window.AllFunc.createAccount(data, res);
     await res.wait;
     if (res.hasOwnProperty('error')) {
         throw new Error(res.error);
@@ -72,7 +83,7 @@ export async function createAccount(data) {
 export async function createKey(data) {
     await init();
     let res = newWasmResult();
-    AllFunc.createKey(data, res);
+    window.AllFunc.createKey(data, res);
     await res.wait;
     if (res.hasOwnProperty('error')) {
         throw new Error(res.error);
@@ -83,7 +94,7 @@ export async function createKey(data) {
 export async function scMulBase(pri) {
     await init();
     let res = newWasmResult();
-    AllFunc.scMulBase(pri, res);
+    window.AllFunc.scMulBase(pri, res);
     await res.wait;
     if (res.hasOwnProperty('error')) {
         throw new Error(res.error);
@@ -116,12 +127,12 @@ function load(){
                 return await WebAssembly.instantiate(source, importObject);
             };
         }
-        const go = new Go();
-        let mod, inst;
+        const go = new window.Go();
+        let /*mod,*/ inst;
         WebAssembly.instantiateStreaming(fetch(Bytom.wasmPath), go.importObject).then(async (result) => {
-            mod = result.module;
+            // mod = result.module;
             inst = result.instance;
-            const run = go.run(inst);
+            /*const run = */go.run(inst);
             window.wasmIsLoad = true;
             // await run;
         });
