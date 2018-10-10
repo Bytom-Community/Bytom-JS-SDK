@@ -23,4 +23,4 @@ bytom.sdk.keys.create("test666", "123456").then((res)=>{
 ## WebAssembly build
 
 Project depends on WebAssembly. \
-[Bytom-WebAssembly](https://github.com/Bytom-Community/Bytom-WebAssembly)
+See [Bytom-WebAssembly](https://github.com/Bytom-Community/Bytom-WebAssembly)
