@@ -1,0 +1,21 @@
+{
+  "name": "bytom-js-sdk",
+  "version": "1.0.2",
+  "description": "bytom chrome api sdk",
+  "main": "src/index.js",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "crypto-js": "^3.1.9-1",
+    "tweetnacl": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/eostimeline/bytom-js-sdk.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
