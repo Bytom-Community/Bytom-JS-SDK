@@ -1,10 +1,12 @@
-# bytom-js-sdk
+# Bytom-JS-SDK
 
-## install
+## Install
 
 ``` bash
 npm install bytom-js-sdk
 ```
+
+## Use
 
 ```javascript
 let bytom = new Bytom("http://52.82.24.155:3000/", chrome.runtime.getURL("main.wasm"));
