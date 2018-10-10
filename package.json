@@ -1,6 +1,6 @@
 {
   "name": "bytom-js-sdk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "bytom chrome api sdk",
   "main": "src/index.js",
   "dependencies": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/eostimeline/bytom-js-sdk.git"
+    "url": "https://github.com/Bytom-Community/Bytom-JS-SDK.git"
   },
   "author": "",
   "license": "ISC"
