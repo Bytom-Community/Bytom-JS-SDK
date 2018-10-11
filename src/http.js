@@ -1,6 +1,26 @@
 import axios from 'axios';
 
-function http(baseUrl, token) {
+const basePath = 'api/v1/btm/';
+
+export function serverHttp(host) {
+    this.host = host;
+    this.request = function(path, body) {
+        var config = {
+            url: `${this.host}${basePath}${path}`,
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+            },
+            data: body,
+            timeout: 1000
+        };
+
+        //return Promise
+        return axios.request(config);
+    };
+}
+
+export function http(baseUrl, token) {
     this.baseUrl = baseUrl;
     this.token = token;
     this.request = function(path, body) {
@@ -28,5 +48,3 @@ function http(baseUrl, token) {
         });
     };
 }
-
-export default http;

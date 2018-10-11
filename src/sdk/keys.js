@@ -12,7 +12,7 @@ function keysSDK() {
  * @param {String} newPassword 
  */
 keysSDK.prototype.resetKeyPassword = function(rootXPub, oldPassword, newPassword) {
-    let returnPromise = new Promise((resolve, reject) => {
+    let retPromise = new Promise((resolve, reject) => {
         let data = {rootXPub: rootXPub, oldPassword:oldPassword, newPassword:newPassword};
         resetKeyPassword(data).then(res => {
             getDB().then(db => {
@@ -46,7 +46,7 @@ keysSDK.prototype.resetKeyPassword = function(rootXPub, oldPassword, newPassword
             reject(error);
         });
     });
-    return returnPromise;
+    return retPromise;
 };
 
 /**
@@ -55,7 +55,7 @@ keysSDK.prototype.resetKeyPassword = function(rootXPub, oldPassword, newPassword
  * @param {String} xpub 
  */
 keysSDK.prototype.getKeyByXPub = function(xpub) {
-    let returnPromise = new Promise((resolve, reject) => {
+    let retPromise = new Promise((resolve, reject) => {
         getDB().then(db => {
             let getRequest = db.transaction(['keys'], 'readonly')
                 .objectStore('keys')
@@ -75,7 +75,7 @@ keysSDK.prototype.getKeyByXPub = function(xpub) {
             reject(error);
         });
     });
-    return returnPromise;
+    return retPromise;
 };
 
 /**
@@ -86,7 +86,7 @@ keysSDK.prototype.getKeyByXPub = function(xpub) {
  */
 keysSDK.prototype.create = function(alias, password) {
     var normalizedAlias = alias.toLowerCase().trim();
-    let returnPromise = new Promise((resolve, reject) => {
+    let retPromise = new Promise((resolve, reject) => {
         getDB().then(db => {
             let getRequest = db.transaction(['keys'], 'readonly')
                 .objectStore('keys')
@@ -127,7 +127,7 @@ keysSDK.prototype.create = function(alias, password) {
             reject(error);
         });
     });
-    return returnPromise;
+    return retPromise;
 };
 
 export default keysSDK;

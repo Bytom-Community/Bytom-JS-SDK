@@ -26,14 +26,14 @@ window.resetWasmStatus = function() {
 //wasm call js func getKeyByXPub
 window.getKeyByXPub = function (XPub) {
     let keys = new keysSDK();
-    let returnPromise = new Promise((resolve, reject) => {
+    let retPromise = new Promise((resolve, reject) => {
         keys.getKeyByXPub(XPub).then(res => {
             resolve(res);
         }).catch(error => {
             reject(error);
         });
     });
-    return returnPromise;
+    return retPromise;
 };
 
 export async function resetKeyPassword(data) {
