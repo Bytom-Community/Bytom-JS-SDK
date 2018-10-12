@@ -1,6 +1,6 @@
 {
   "name": "bytom-js-sdk",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "bytom chrome api sdk",
   "main": "src/index.js",
   "dependencies": {
