@@ -8,7 +8,7 @@ export async function getDB() {
     return db;
 }
 /*eslint no-console: 'off'*/
-async function initDB() {
+export async function initDB() {
     if (!init) {
         let dbpr = new Promise(function(resolve, reject){
             let request = indexedDB.open('bytom', version);
