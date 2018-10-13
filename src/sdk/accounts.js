@@ -1,5 +1,6 @@
 import {getDB} from '../db/db';
 import {createAccount, createAccountReceiver} from '../wasm/func';
+import {handleAxiosError} from '../utils/http';
 
 function accountsSDK(http){
     this.http = http;
@@ -49,7 +50,7 @@ accountsSDK.prototype.listAddressUseServer = function(guid) {
         this.http.request('account/list-addresses', {guid:guid}).then(resp => {
             resolve(resp.data.data.addresses);
         }).catch(error => {
-            reject(error);
+            reject(handleAxiosError(error));
         });
     });
     return retPromise;
@@ -84,7 +85,7 @@ accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label) {
                 };
             });
         }).catch(error => {
-            reject(error);
+            reject(handleAxiosError(error));
         });
     });
     return retPromise;
@@ -141,7 +142,7 @@ accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label) 
                         };
                     });
                 }).catch(error => {
-                    reject(error);
+                    reject(handleAxiosError(error));
                 });
             };
             getRequest.onerror = function() {

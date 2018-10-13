@@ -24,7 +24,7 @@ function Bytom(serverHost, wasmPath, baseURL, token) {
     this.sdk = {};
     this.sdk.keys = new keysSDK();
     this.sdk.accounts = new accountsSDK(this.serverHttp);
-    this.sdk.transaction = new transactionSDK();
+    this.sdk.transaction = new transactionSDK(this.serverHttp);
 }
 
 export default Bytom;
