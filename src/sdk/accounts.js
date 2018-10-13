@@ -5,9 +5,62 @@ function accountsSDK(http){
     this.http = http;
 }
 
-accountsSDK.prototype.createAccountReceiverUseServer = function(guid) {
+/**
+ * List of the account.
+ *
+ * @returns {Promise}
+ */
+accountsSDK.prototype.ListAccountUseServer = function() {
     let retPromise = new Promise((resolve, reject) => {
-        this.http.request('account/new-address', {guid:guid}).then(resp => {
+        getDB().then(db => {
+            let transaction = db.transaction(['accounts-server'], 'readonly');
+            let objectStore = transaction.objectStore('accounts-server');
+            let oc = objectStore.openCursor();
+            let ret = [];
+            oc.onsuccess = function (event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    ret.push(cursor.value);
+                    cursor.continue();
+                } else {
+                    resolve(ret);
+                }
+            };
+            oc.onerror = function(e){
+                reject(e);
+            };
+        }).catch(error => {
+            reject(error);
+        });
+    });
+    return retPromise;
+};
+
+accountsSDK.prototype.ListAddressUseServer = function(guid) {
+    let retPromise = new Promise((resolve, reject) => {
+        this.http.request('account/list-addresses', {guid:guid}).then(resp => {
+            resolve(resp.data.data.addresses);
+        }).catch(error => {
+            reject(error);
+        });
+    });
+    return retPromise;
+};
+/**
+ * Create a new address for a wallet.
+ *
+ * @see https://gist.github.com/HAOYUatHZ/0c7446b8f33e7cddd590256b3824b08f#apiv1btmaccountnew-address
+ * @param {String} guid unique id for each wallet
+ * @param {String} label alias for the address to be created
+ * @returns {Promise}
+ */
+accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label) {
+    let retPromise = new Promise((resolve, reject) => {
+        let pm = {guid: guid};
+        if (label) {
+            pm.label = label;
+        }
+        this.http.request('account/new-address', pm).then(resp => {
             let dbData = resp.data.data;
             dbData.guid = guid;
             getDB().then(db => {
@@ -29,33 +82,65 @@ accountsSDK.prototype.createAccountReceiverUseServer = function(guid) {
     return retPromise;
 };
 
-accountsSDK.prototype.createAccountUseServer = function(rootXPub) {
+/**
+ * Create a wallet using a public key. Each wallet is identified by a guid. (by server)
+ * 
+ * @see https://gist.github.com/HAOYUatHZ/0c7446b8f33e7cddd590256b3824b08f#endpoints
+ * @param {String} rootXPub
+ * @param {String} alias alias for the account
+ * @param {String} label alias for the first address
+ * @returns {Promise}
+ */
+accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label) {
+    let that = this;
     let retPromise = new Promise((resolve, reject) => {
-        this.http.request('account/create', {pubkey: rootXPub}).then(resp => {
-            let dbData = resp.data.data;
-            dbData.rootXPub = rootXPub;
-            getDB().then(db => {
-                let transaction = db.transaction(['accounts-server'], 'readwrite');
-                let objectStore = transaction.objectStore('accounts-server');
-                let request = objectStore.add(dbData);
-                request.onsuccess = function() {
-                    let transaction = db.transaction(['addresses-server'], 'readwrite');
-                    let objectStore = transaction.objectStore('addresses-server');
-                    delete dbData.rootXPub;
-                    let request = objectStore.add(dbData);
-                    request.onsuccess = function() {
-                        resolve(dbData);
-                    };
-                    request.onerror = function() {
-                        reject(request.error);
-                    };
-                };
-                request.onerror = function() {
-                    reject(request.error);
-                };
-            });
-        }).catch(error => {
-            reject(error);
+        getDB().then(db => {
+            let getRequest = db.transaction(['accounts-server'], 'readonly')
+                .objectStore('accounts-server')
+                .index('alias')
+                .get(alias);
+            getRequest.onsuccess = function(e) {
+                if (e.target.result) {
+                    reject(new Error('duplicate account alias'));
+                    return;
+                }
+                let pm = {pubkey: rootXPub};
+                if (label) {
+                    pm.label = label;
+                }
+                that.http.request('account/create', pm).then(resp => {
+                    let dbData = resp.data.data;
+                    dbData.rootXPub = rootXPub;
+                    dbData.alias = alias;
+                    getDB().then(db => {
+                        let transaction = db.transaction(['accounts-server'], 'readwrite');
+                        let objectStore = transaction.objectStore('accounts-server');
+                        let request = objectStore.add(dbData);
+                        request.onsuccess = function() {
+                            let transaction = db.transaction(['addresses-server'], 'readwrite');
+                            let objectStore = transaction.objectStore('addresses-server');
+                            delete dbData.rootXPub;
+                            let request = objectStore.add(dbData);
+                            request.onsuccess = function() {
+                                resolve(dbData);
+                            };
+                            request.onerror = function() {
+                                reject(request.error);
+                            };
+                        };
+                        request.onerror = function() {
+                            reject(request.error);
+                        };
+                    });
+                }).catch(error => {
+                    reject(error);
+                });
+            };
+            getRequest.onerror = function() {
+                reject(getRequest.error);
+            };
+        }).catch(err => {
+            reject(err);
         });
     });
     return retPromise;
@@ -104,6 +189,7 @@ accountsSDK.prototype.createAccount = function(alias, quorum, rootXPub) {
 };
 
 /**
+ * create account address
  * 
  * @param {Object} account createAccount return account Object val
  * @param {Int} nextIndex 

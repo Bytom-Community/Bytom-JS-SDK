@@ -1,7 +1,7 @@
 let db;
 let init = false;
 //db version
-const version = 1;
+const version = 2;
 
 export async function getDB() {
     await initDB();
@@ -24,29 +24,35 @@ async function initDB() {
             request.onupgradeneeded = function(event) {
                 db = event.target.result;
                 console.log('onupgradeneeded IndexedDB');
-                if (!db.objectStoreNames.contains('keys')) {
-                    let ObjectStore = db.createObjectStore('keys', { autoIncrement: true });
-                    ObjectStore.createIndex('alias', 'alias', { unique: true });
-                    ObjectStore.createIndex('xpub', 'xpub', { unique: true });
+                if (event.oldVersion < 1) {
+                    if (!db.objectStoreNames.contains('keys')) {
+                        let ObjectStore = db.createObjectStore('keys', { autoIncrement: true });
+                        ObjectStore.createIndex('alias', 'alias', { unique: true });
+                        ObjectStore.createIndex('xpub', 'xpub', { unique: true });
+                    }
+                    if(!db.objectStoreNames.contains('accounts')) {
+                        let ObjectStore = db.createObjectStore('accounts', { autoIncrement: true });
+                        ObjectStore.createIndex('alias', 'alias', { unique: true });
+                        ObjectStore.createIndex('id', 'id', { unique: true });
+                    }
+                    if(!db.objectStoreNames.contains('addresses')) {
+                        let ObjectStore = db.createObjectStore('addresses', { autoIncrement: true });
+                        ObjectStore.createIndex('AccountID', 'AccountID', { unique: false });
+                        ObjectStore.createIndex('Address', 'Address', { unique: true });
+                    }
+                    if(!db.objectStoreNames.contains('accounts-server')) {
+                        let ObjectStore = db.createObjectStore('accounts-server', { autoIncrement: true });
+                        ObjectStore.createIndex('guid', 'guid', { unique: true });
+                    }
+                    if(!db.objectStoreNames.contains('addresses-server')) {
+                        let ObjectStore = db.createObjectStore('addresses-server', { autoIncrement: true });
+                        ObjectStore.createIndex('guid', 'guid', { unique: false });
+                        ObjectStore.createIndex('address', 'address', { unique: true });
+                    }
                 }
-                if(!db.objectStoreNames.contains('accounts')) {
-                    let ObjectStore = db.createObjectStore('accounts', { autoIncrement: true });
-                    ObjectStore.createIndex('alias', 'alias', { unique: true });
-                    ObjectStore.createIndex('id', 'id', { unique: true });
-                }
-                if(!db.objectStoreNames.contains('addresses')) {
-                    let ObjectStore = db.createObjectStore('addresses', { autoIncrement: true });
-                    ObjectStore.createIndex('AccountID', 'AccountID', { unique: false });
-                    ObjectStore.createIndex('Address', 'Address', { unique: true });
-                }
-                if(!db.objectStoreNames.contains('accounts-server')) {
-                    let ObjectStore = db.createObjectStore('accounts-server', { autoIncrement: true });
-                    ObjectStore.createIndex('guid', 'guid', { unique: true });
-                }
-                if(!db.objectStoreNames.contains('addresses-server')) {
-                    let ObjectStore = db.createObjectStore('addresses-server', { autoIncrement: true });
-                    ObjectStore.createIndex('guid', 'guid', { unique: false });
-                    ObjectStore.createIndex('address', 'address', { unique: true });
+                if (event.oldVersion < 2) {
+                    let accountsStore = request.transaction.objectStore('accounts-server');
+                    accountsStore.createIndex('alias', 'alias', { unique: true });
                 }
             };
         });
