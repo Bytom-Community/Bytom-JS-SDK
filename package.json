@@ -1,8 +1,13 @@
 {
   "name": "bytom-js-sdk",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "bytom chrome api sdk",
   "main": "src/index.js",
+  "keywords" :[
+    "Bytom",
+    "SDK",
+    "WebAssembly"
+  ],
   "dependencies": {
     "axios": "^0.18.0",
     "eslint": "^5.6.1"
@@ -16,5 +21,5 @@
     "url": "https://github.com/Bytom-Community/Bytom-JS-SDK.git"
   },
   "author": "",
-  "license": "ISC"
+  "license": "MIT"
 }

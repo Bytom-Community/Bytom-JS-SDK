@@ -10,7 +10,7 @@ function accountsSDK(http){
  *
  * @returns {Promise}
  */
-accountsSDK.prototype.ListAccountUseServer = function() {
+accountsSDK.prototype.listAccountUseServer = function() {
     let retPromise = new Promise((resolve, reject) => {
         getDB().then(db => {
             let transaction = db.transaction(['accounts-server'], 'readonly');
@@ -44,7 +44,7 @@ accountsSDK.prototype.ListAccountUseServer = function() {
  * @param {String} guid
  * @returns
  */
-accountsSDK.prototype.ListAddressUseServer = function(guid) {
+accountsSDK.prototype.listAddressUseServer = function(guid) {
     let retPromise = new Promise((resolve, reject) => {
         this.http.request('account/list-addresses', {guid:guid}).then(resp => {
             resolve(resp.data.data.addresses);

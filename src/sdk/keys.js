@@ -79,6 +79,37 @@ keysSDK.prototype.getKeyByXPub = function(xpub) {
 };
 
 /**
+ * List key
+ *
+ * @returns {Promise}
+ */
+keysSDK.prototype.list = function() {
+    let retPromise = new Promise((resolve, reject) => {
+        getDB().then(db => {
+            let transaction = db.transaction(['keys'], 'readonly');
+            let objectStore = transaction.objectStore('keys');
+            let oc = objectStore.openCursor();
+            let ret = [];
+            oc.onsuccess = function (event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    ret.push({alias: cursor.value.alias, xpub: cursor.value.xpub});
+                    cursor.continue();
+                } else {
+                    resolve(ret);
+                }
+            };
+            oc.onerror = function(e){
+                reject(e);
+            };
+        }).catch(err => {
+            reject(err);
+        });
+    });
+    return retPromise;
+};
+
+/**
  * Create a new key.
  * 
  * @param {String} alias - User specified, unique identifier.
