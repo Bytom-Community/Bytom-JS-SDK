@@ -36,6 +36,14 @@ accountsSDK.prototype.ListAccountUseServer = function() {
     return retPromise;
 };
 
+
+/**
+ * List all addresses and the corresponding balances of a wallet.
+ *
+ * @see https://gist.github.com/HAOYUatHZ/0c7446b8f33e7cddd590256b3824b08f#apiv1btmaccountlist-addresses
+ * @param {String} guid
+ * @returns
+ */
 accountsSDK.prototype.ListAddressUseServer = function(guid) {
     let retPromise = new Promise((resolve, reject) => {
         this.http.request('account/list-addresses', {guid:guid}).then(resp => {
