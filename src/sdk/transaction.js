@@ -95,7 +95,7 @@ transactionSDK.prototype.signTransaction = function(transaction, password) {
     let data = {transaction:transaction, password:password};
     let retPromise = new Promise((resolve, reject) => {
         signTransaction(data).then(res => {
-            resolve(res.data);
+            resolve(JSON.parse(res.data));
         }).catch(err => {
             reject(err);
         });
