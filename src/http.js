@@ -4,9 +4,9 @@ const basePath = 'api/v1/btm/';
 
 export function serverHttp(host) {
     this.host = host;
-    this.request = function(path, body) {
+    this.request = function(path, body, net) {
         var config = {
-            url: `${this.host}${basePath}${path}`,
+            url: `${this.host[net]}${basePath}${path}`,
             method: 'POST',
             headers: {
                 Accept: 'application/json',

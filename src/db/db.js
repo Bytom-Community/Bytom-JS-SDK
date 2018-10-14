@@ -1,7 +1,7 @@
 let db;
 let init = false;
 //db version
-const version = 2;
+const version = 3;
 
 export async function getDB() {
     await initDB();
@@ -53,6 +53,12 @@ export async function initDB() {
                 if (event.oldVersion < 2) {
                     let accountsStore = request.transaction.objectStore('accounts-server');
                     accountsStore.createIndex('alias', 'alias', { unique: true });
+                }
+                if (event.oldVersion < 3) {
+                    let accountsStore = request.transaction.objectStore('accounts-server');
+                    accountsStore.createIndex('net', 'net', { unique: false });
+                    let addressesStore = request.transaction.objectStore('addresses-server');
+                    addressesStore.createIndex('net', 'net', { unique: false });
                 }
             };
         });

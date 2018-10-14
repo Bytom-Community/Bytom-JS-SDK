@@ -9,14 +9,19 @@ function accountsSDK(http){
 /**
  * List of the account.
  *
+ * @param {String} net list select net
  * @returns {Promise}
  */
-accountsSDK.prototype.listAccountUseServer = function() {
+accountsSDK.prototype.listAccountUseServer = function(net) {
+    if (!net) {
+        net = 'main';
+    }
     let retPromise = new Promise((resolve, reject) => {
         getDB().then(db => {
             let transaction = db.transaction(['accounts-server'], 'readonly');
-            let objectStore = transaction.objectStore('accounts-server');
-            let oc = objectStore.openCursor();
+            let objectStore = transaction.objectStore('accounts-server').index('net');
+            let keyRange = IDBKeyRange.only(net);
+            let oc = objectStore.openCursor(keyRange);
             let ret = [];
             oc.onsuccess = function (event) {
                 var cursor = event.target.result;
@@ -43,11 +48,15 @@ accountsSDK.prototype.listAccountUseServer = function() {
  *
  * @see https://gist.github.com/HAOYUatHZ/0c7446b8f33e7cddd590256b3824b08f#apiv1btmaccountlist-addresses
  * @param {String} guid
+ * @param {String} net server net
  * @returns
  */
-accountsSDK.prototype.listAddressUseServer = function(guid) {
+accountsSDK.prototype.listAddressUseServer = function(guid, net) {
+    if (!net) {
+        net = 'main';
+    }
     let retPromise = new Promise((resolve, reject) => {
-        this.http.request('account/list-addresses', {guid:guid}).then(resp => {
+        this.http.request('account/list-addresses', {guid:guid}, net).then(resp => {
             resolve(resp.data.data.addresses);
         }).catch(error => {
             reject(handleAxiosError(error));
@@ -61,17 +70,22 @@ accountsSDK.prototype.listAddressUseServer = function(guid) {
  * @see https://gist.github.com/HAOYUatHZ/0c7446b8f33e7cddd590256b3824b08f#apiv1btmaccountnew-address
  * @param {String} guid unique id for each wallet
  * @param {String} label alias for the address to be created
+ * @param {String} net address net
  * @returns {Promise}
  */
-accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label) {
+accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label, net) {
+    if (!net) {
+        net = 'main';
+    }
     let retPromise = new Promise((resolve, reject) => {
         let pm = {guid: guid};
         if (label) {
             pm.label = label;
         }
-        this.http.request('account/new-address', pm).then(resp => {
+        this.http.request('account/new-address', pm, net).then(resp => {
             let dbData = resp.data.data;
             dbData.guid = guid;
+            dbData.net = net;
             getDB().then(db => {
                 let transaction = db.transaction(['addresses-server'], 'readwrite');
                 let objectStore = transaction.objectStore('addresses-server');
@@ -98,9 +112,13 @@ accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label) {
  * @param {String} rootXPub
  * @param {String} alias alias for the account
  * @param {String} label alias for the first address
+ * @param {String} net account net
  * @returns {Promise}
  */
-accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label) {
+accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label, net) {
+    if (!net) {
+        net = 'main';
+    }
     let that = this;
     let retPromise = new Promise((resolve, reject) => {
         getDB().then(db => {
@@ -117,10 +135,11 @@ accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label) 
                 if (label) {
                     pm.label = label;
                 }
-                that.http.request('account/create', pm).then(resp => {
+                that.http.request('account/create', pm, net).then(resp => {
                     let dbData = resp.data.data;
                     dbData.rootXPub = rootXPub;
                     dbData.alias = alias;
+                    dbData.net = net;
                     getDB().then(db => {
                         let transaction = db.transaction(['accounts-server'], 'readwrite');
                         let objectStore = transaction.objectStore('accounts-server');
