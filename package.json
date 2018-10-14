@@ -1,6 +1,6 @@
 {
   "name": "bytom-js-sdk",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "description": "Bytom JS SDK",
   "main": "src/index.js",
   "keywords" :[

@@ -62,7 +62,7 @@ walletSDK.prototype.restore = function(walletImage) {
                     reject(err);
                 });
             } else {
-                reject('The wallet already has account data. Can\'t restore.');
+                reject(new Error('The wallet already has account data. Can\'t restore.'));
             }
         }).catch(error => {
             reject(error);
