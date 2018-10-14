@@ -11,10 +11,14 @@ npm install bytom-js-sdk
 
 ```javascript
 let net = {
-    main : "http://main-net-host/",
+    main: "http://main-net-host/",
     test: "http://test-net-host/"
 };
 let bytom = new Bytom(net, chrome.runtime.getURL("main.wasm"));
+
+//set Bytom net type (main test), default main net.
+bytom.setNetType('test');
+console.log(bytom.getNetType());
 
 //create key
 bytom.sdk.keys.create("test_alias", "123456").then((res)=>{

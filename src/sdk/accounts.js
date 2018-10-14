@@ -2,20 +2,18 @@ import {getDB} from '../db/db';
 import {createAccount, createAccountReceiver} from '../wasm/func';
 import {handleAxiosError} from '../utils/http';
 
-function accountsSDK(http){
-    this.http = http;
+function accountsSDK(bytom){
+    this.http = bytom.serverHttp;
+    this.bytom = bytom;
 }
 
 /**
  * List of the account.
  *
- * @param {String} net list select net
  * @returns {Promise}
  */
-accountsSDK.prototype.listAccountUseServer = function(net) {
-    if (!net) {
-        net = 'main';
-    }
+accountsSDK.prototype.listAccountUseServer = function() {
+    let net = this.bytom.net;
     let retPromise = new Promise((resolve, reject) => {
         getDB().then(db => {
             let transaction = db.transaction(['accounts-server'], 'readonly');
@@ -48,13 +46,10 @@ accountsSDK.prototype.listAccountUseServer = function(net) {
  *
  * @see https://gist.github.com/HAOYUatHZ/0c7446b8f33e7cddd590256b3824b08f#apiv1btmaccountlist-addresses
  * @param {String} guid
- * @param {String} net server net
  * @returns
  */
-accountsSDK.prototype.listAddressUseServer = function(guid, net) {
-    if (!net) {
-        net = 'main';
-    }
+accountsSDK.prototype.listAddressUseServer = function(guid) {
+    let net = this.bytom.net;
     let retPromise = new Promise((resolve, reject) => {
         this.http.request('account/list-addresses', {guid:guid}, net).then(resp => {
             resolve(resp.data.data.addresses);
@@ -70,13 +65,10 @@ accountsSDK.prototype.listAddressUseServer = function(guid, net) {
  * @see https://gist.github.com/HAOYUatHZ/0c7446b8f33e7cddd590256b3824b08f#apiv1btmaccountnew-address
  * @param {String} guid unique id for each wallet
  * @param {String} label alias for the address to be created
- * @param {String} net address net
  * @returns {Promise}
  */
-accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label, net) {
-    if (!net) {
-        net = 'main';
-    }
+accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label) {
+    let net = this.bytom.net;
     let retPromise = new Promise((resolve, reject) => {
         let pm = {guid: guid};
         if (label) {
@@ -112,13 +104,10 @@ accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label, net
  * @param {String} rootXPub
  * @param {String} alias alias for the account
  * @param {String} label alias for the first address
- * @param {String} net account net
  * @returns {Promise}
  */
-accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label, net) {
-    if (!net) {
-        net = 'main';
-    }
+accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label) {
+    let net = this.bytom.net;
     let that = this;
     let retPromise = new Promise((resolve, reject) => {
         getDB().then(db => {

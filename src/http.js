@@ -12,7 +12,7 @@ export function serverHttp(host) {
                 Accept: 'application/json',
             },
             data: body,
-            timeout: 1000
+            timeout: 2000
         };
 
         //return Promise

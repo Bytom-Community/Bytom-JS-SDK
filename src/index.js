@@ -19,14 +19,33 @@ function Bytom(serverHost, wasmPath, baseURL, token) {
         this.accounts = new accountsApi(this.http);
         this.transactions = new transactionsApi(this.http);
     }
-
+    this.net = 'main';
     Bytom.wasmPath = wasmPath;
     this.serverHttp = new serverHttp(serverHost);
     this.sdk = {};
     this.sdk.keys = new keysSDK();
-    this.sdk.accounts = new accountsSDK(this.serverHttp);
-    this.sdk.transaction = new transactionSDK(this.serverHttp);
+    this.sdk.accounts = new accountsSDK(this);
+    this.sdk.transaction = new transactionSDK(this);
     this.sdk.wallet = new walletSDK(this);
 }
+
+
+/**
+ * Get net type;
+ *
+ * @returns
+ */
+Bytom.prototype.getNetType = function() {
+    return this.net;
+};
+
+/**
+ * Set net type
+ *
+ * @param {String} net net type (main test)
+ */
+Bytom.prototype.setNetType = function(net) {
+    this.net = net;
+};
 
 export default Bytom;

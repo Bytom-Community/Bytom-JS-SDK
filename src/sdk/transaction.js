@@ -1,8 +1,9 @@
 import {signTransaction} from '../wasm/func';
 import {handleAxiosError} from '../utils/http';
 
-function transactionSDK(http) {
-    this.http = http;
+function transactionSDK(bytom) {
+    this.http = bytom.serverHttp;
+    this.bytom = bytom;
 }
 
 
@@ -15,12 +16,13 @@ function transactionSDK(http) {
  * @returns {Promise}
  */
 transactionSDK.prototype.list = function(guid, address) {
+    let net = this.bytom.net;
     let retPromise = new Promise((resolve, reject) => {
         let pm = {guid: guid};
         if (address) {
             pm.address = address;
         }
-        this.http.request('merchant/list-transactions', pm).then(resp => {
+        this.http.request('merchant/list-transactions', pm, net).then(resp => {
             resolve(resp.data);
         }).catch(err => {
             reject(handleAxiosError(err));
@@ -38,9 +40,10 @@ transactionSDK.prototype.list = function(guid, address) {
  * @param {Array} signatures signed data of each signing instruction
  */
 transactionSDK.prototype.submitPayment = function(guid, raw_transaction, signatures) {
+    let net = this.bytom.net;
     let retPromise = new Promise((resolve, reject) => {
         let pm = {guid: guid, raw_transaction: raw_transaction, signatures: signatures};
-        this.http.request('merchant/submit-payment', pm).then(resp => {
+        this.http.request('merchant/submit-payment', pm, net).then(resp => {
             resolve(resp.data);
         }).catch(err => {
             reject(handleAxiosError(err));
@@ -63,6 +66,7 @@ transactionSDK.prototype.submitPayment = function(guid, raw_transaction, signatu
  * @returns {Promise}
  */
 transactionSDK.prototype.buildPayment = function(guid, to, asset, amount, from, fee) {
+    let net = this.bytom.net;
     let retPromise = new Promise((resolve, reject) => {
         let pm = {guid: guid, to: to, asset: asset, amount: amount};
         if (from) {
@@ -71,7 +75,7 @@ transactionSDK.prototype.buildPayment = function(guid, to, asset, amount, from, 
         if (fee) {
             pm.fee = fee;
         }
-        this.http.request('merchant/build-payment', pm).then(resp => {
+        this.http.request('merchant/build-payment', pm, net).then(resp => {
             resolve(resp.data);
         }).catch(err => {
             reject(handleAxiosError(err));
