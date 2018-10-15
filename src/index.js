@@ -19,6 +19,7 @@ function Bytom(serverHost, wasmPath, baseURL, token) {
         this.accounts = new accountsApi(this.http);
         this.transactions = new transactionsApi(this.http);
     }
+
     this.net = 'main';
     Bytom.wasmPath = wasmPath;
     this.serverHttp = new serverHttp(serverHost);

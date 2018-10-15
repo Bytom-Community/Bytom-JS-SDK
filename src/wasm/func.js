@@ -47,10 +47,24 @@ export async function resetKeyPassword(data) {
     return res;
 }
 
+//signTransaction bytom node standard
 export async function signTransaction(data) {
     await init();
     let res = newWasmResult();
     window.AllFunc.signTransaction(data, res);
+    await res.wait;
+    if (res.hasOwnProperty('error')) {
+        throw new Error(res.error);
+    }
+    return res;
+}
+//signTransaction1 bytom central server standard
+//see https://gist.github.com/HAOYUatHZ/0c7446b8f33e7cddd590256b3824b08f#apiv1btmmerchantsubmit-payment
+//see https://github.com/Bytom-Community/Bytom-WebAssembly/blob/master/sdk/transaction.go (wasm implement)
+export async function signTransaction1(data) {
+    await init();
+    let res = newWasmResult();
+    window.AllFunc.signTransaction1(data, res);
     await res.wait;
     if (res.hasOwnProperty('error')) {
         throw new Error(res.error);

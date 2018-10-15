@@ -1,5 +1,6 @@
-import {signTransaction} from '../wasm/func';
-import {handleAxiosError} from '../utils/http';
+import { signTransaction1 } from '../wasm/func';
+import { handleAxiosError } from '../utils/http';
+import { getDB } from '../db/db';
 
 function transactionSDK(bytom) {
     this.http = bytom.serverHttp;
@@ -86,18 +87,40 @@ transactionSDK.prototype.buildPayment = function(guid, to, asset, amount, from, 
 
 /**
  * sign transaction
- *
+ * @param {String} guid
  * @param {String} transaction
  * @param {String} password
- * @returns {Promise}
+ * @returns {Object} signed data
  */
-transactionSDK.prototype.signTransaction = function(transaction, password) {
-    let data = {transaction:transaction, password:password};
+transactionSDK.prototype.signTransaction = function(guid, transaction, password) {
+    let bytom = this.bytom;
     let retPromise = new Promise((resolve, reject) => {
-        signTransaction(data).then(res => {
-            resolve(JSON.parse(res.data));
-        }).catch(err => {
-            reject(err);
+        getDB().then(db => {
+            let getRequest = db.transaction(['accounts-server'], 'readonly')
+                .objectStore('accounts-server')
+                .index('guid')
+                .get(guid);
+            getRequest.onsuccess = function(e) {
+                if (!e.target.result) {
+                    reject(new Error('not found guid'));
+                    return;
+                }
+                bytom.sdk.keys.getKeyByXPub(e.target.result.rootXPub).then(res => {
+                    let pm = {transaction: transaction, password: password, key: res};
+                    signTransaction1(pm).then(res => {
+                        resolve(JSON.parse(res.data));
+                    }).catch(err => {
+                        reject(err);
+                    });
+                }).catch(err => {
+                    reject(err);
+                });
+            };
+            getRequest.onerror = function() {
+                reject(getRequest.error);
+            };
+        }).catch(error => {
+            reject(error);
         });
     });
     return retPromise;
