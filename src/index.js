@@ -7,7 +7,6 @@ import transactionSDK from './sdk/transaction.js';
 import walletSDK from './sdk/wallet.js';
 import {serverHttp, http} from './http.js';
 
-//todo vue use
 function Bytom(serverHost, wasmPath, baseURL, token) {
     this.install = function(Vue) {
         Vue.prototype.$Bytom = this;
