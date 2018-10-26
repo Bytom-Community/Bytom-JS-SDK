@@ -14,14 +14,22 @@ function transactionSDK(bytom) {
  * @see https://gist.github.com/HAOYUatHZ/0c7446b8f33e7cddd590256b3824b08f#apiv1btmmerchantlist-transactions
  * @param {String} guid unique id for each wallet
  * @param {String} address (optional) if provided, will only return transactions the address is related to
+ * @param {Number} start page start
+ * @param {Number} limit page limit
  * @returns {Promise}
  */
-transactionSDK.prototype.list = function(guid, address) {
+transactionSDK.prototype.list = function(guid, address, start, limit) {
     let net = this.bytom.net;
     let retPromise = new Promise((resolve, reject) => {
         let pm = {guid: guid};
         if (address) {
             pm.address = address;
+        }
+        if (typeof start !== 'undefined') {
+            pm.start = start;
+        }
+        if (limit) {
+            pm.limit = limit;
         }
         this.http.request('merchant/list-transactions', pm, net).then(resp => {
             resolve(resp.data);
