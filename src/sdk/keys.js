@@ -125,7 +125,7 @@ keysSDK.prototype.create = function(alias, password) {
                 .get(normalizedAlias);
             getRequest.onsuccess = function (e) {
                 if (e.target.result) {
-                    reject(new Error('alias already exists'));
+                    reject(new Error('key alias already exists'));
                     return;
                 }
                 let data = {};

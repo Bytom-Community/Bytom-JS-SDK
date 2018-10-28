@@ -1,5 +1,5 @@
 import { signTransaction1 } from '../wasm/func';
-import { handleAxiosError } from '../utils/http';
+import { handleApiError, handleAxiosError } from '../utils/http';
 import { getDB } from '../db/db';
 
 function transactionSDK(bytom) {
@@ -25,13 +25,16 @@ transactionSDK.prototype.list = function(guid, address, start, limit) {
         if (address) {
             pm.address = address;
         }
+        let url = 'merchant/list-transactions';
+        let args = new URLSearchParams();
         if (typeof start !== 'undefined') {
-            pm.start = start;
+            args.append('start', start);
         }
         if (limit) {
-            pm.limit = limit;
+            args.append('limit', limit);
         }
-        this.http.request('merchant/list-transactions', pm, net).then(resp => {
+        url = url + '?' + args.toString();
+        this.http.request(url, pm, net).then(resp => {
             resolve(resp.data);
         }).catch(err => {
             reject(handleAxiosError(err));
@@ -53,6 +56,10 @@ transactionSDK.prototype.submitPayment = function(guid, raw_transaction, signatu
     let retPromise = new Promise((resolve, reject) => {
         let pm = {guid: guid, raw_transaction: raw_transaction, signatures: signatures};
         this.http.request('merchant/submit-payment', pm, net).then(resp => {
+            if (resp.status !== 200) {
+                reject(handleApiError(resp));
+                return;
+            }
             resolve(resp.data);
         }).catch(err => {
             reject(handleAxiosError(err));
@@ -85,6 +92,10 @@ transactionSDK.prototype.buildPayment = function(guid, to, asset, amount, from, 
             pm.fee = fee;
         }
         this.http.request('merchant/build-payment', pm, net).then(resp => {
+            if (resp.status !== 200) {
+                reject(handleApiError(resp));
+                return;
+            }
             resolve(resp.data);
         }).catch(err => {
             reject(handleAxiosError(err));

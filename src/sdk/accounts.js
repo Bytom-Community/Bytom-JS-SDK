@@ -1,7 +1,6 @@
 import {getDB} from '../db/db';
 import {createAccount, createAccountReceiver} from '../wasm/func';
-import {handleAxiosError} from '../utils/http';
-
+import {handleApiError, handleAxiosError} from '../utils/http';
 function accountsSDK(bytom){
     this.http = bytom.serverHttp;
     this.bytom = bytom;
@@ -75,6 +74,10 @@ accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label) {
             pm.label = label;
         }
         this.http.request('account/new-address', pm, net).then(resp => {
+            if (resp.status !== 200) {
+                reject(handleApiError(resp));
+                return;
+            }
             let dbData = resp.data.data;
             dbData.guid = guid;
             dbData.net = net;
@@ -125,6 +128,10 @@ accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label) 
                     pm.label = label;
                 }
                 that.http.request('account/create', pm, net).then(resp => {
+                    if (resp.status !== 200) {
+                        reject(handleApiError(resp));
+                        return;
+                    }
                     let dbData = resp.data.data;
                     dbData.rootXPub = rootXPub;
                     dbData.alias = alias;
