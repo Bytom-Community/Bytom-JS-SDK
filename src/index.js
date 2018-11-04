@@ -5,6 +5,7 @@ import keysSDK from './sdk/keys.js';
 import accountsSDK from './sdk/accounts.js';
 import transactionSDK from './sdk/transaction.js';
 import walletSDK from './sdk/wallet.js';
+import querySDK from './sdk/query.js';
 import {serverHttp, http} from './http.js';
 
 function Bytom(serverHost, wasmPath, baseURL, token) {
@@ -27,6 +28,7 @@ function Bytom(serverHost, wasmPath, baseURL, token) {
     this.sdk.accounts = new accountsSDK(this);
     this.sdk.transaction = new transactionSDK(this);
     this.sdk.wallet = new walletSDK(this);
+    this.sdk.query = new querySDK(this);
 }
 
 
