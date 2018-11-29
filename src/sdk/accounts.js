@@ -78,13 +78,15 @@ accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label) {
                 reject(handleApiError(resp));
                 return;
             }
-            let dbData = resp.data.data;
-            dbData.guid = guid;
-            dbData.net = net;
+            let dbData = {
+                guid: guid,
+                net: net,
+                address: resp.data.data.address,
+                label: resp.data.data.label
+            };
             getDB().then(db => {
                 let transaction = db.transaction(['addresses-server'], 'readwrite');
                 let objectStore = transaction.objectStore('addresses-server');
-                delete dbData.rootXPub;
                 let request = objectStore.add(dbData);
                 request.onsuccess = function() {
                     resolve(dbData);
@@ -132,10 +134,14 @@ accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label) 
                         reject(handleApiError(resp));
                         return;
                     }
-                    let dbData = resp.data.data;
-                    dbData.rootXPub = rootXPub;
-                    dbData.alias = alias;
-                    dbData.net = net;
+                    let dbData = {
+                        rootXPub: rootXPub,
+                        alias: alias,
+                        net: net,
+                        address: resp.data.data.address,
+                        guid: resp.data.data.guid,
+                        label: resp.data.data.label
+                    };
                     getDB().then(db => {
                         let transaction = db.transaction(['accounts-server'], 'readwrite');
                         let objectStore = transaction.objectStore('accounts-server');
