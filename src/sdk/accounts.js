@@ -51,7 +51,7 @@ accountsSDK.prototype.listAddressUseServer = function(guid) {
     let net = this.bytom.net;
     let retPromise = new Promise((resolve, reject) => {
         this.http.request('account/list-addresses', {guid:guid}, net).then(resp => {
-            resolve(resp.data.data.addresses);
+            resolve(resp.data.result.data);
         }).catch(error => {
             reject(handleAxiosError(error));
         });
@@ -78,15 +78,13 @@ accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label) {
                 reject(handleApiError(resp));
                 return;
             }
-            let dbData = {
-                guid: guid,
-                net: net,
-                address: resp.data.data.address,
-                label: resp.data.data.label
-            };
+            let dbData = resp.data.result.data;
+            dbData.guid = guid;
+            dbData.net = net;
             getDB().then(db => {
                 let transaction = db.transaction(['addresses-server'], 'readwrite');
                 let objectStore = transaction.objectStore('addresses-server');
+                delete dbData.rootXPub;
                 let request = objectStore.add(dbData);
                 request.onsuccess = function() {
                     resolve(dbData);
@@ -134,14 +132,10 @@ accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label) 
                         reject(handleApiError(resp));
                         return;
                     }
-                    let dbData = {
-                        rootXPub: rootXPub,
-                        alias: alias,
-                        net: net,
-                        address: resp.data.data.address,
-                        guid: resp.data.data.guid,
-                        label: resp.data.data.label
-                    };
+                    let dbData = resp.data.result.data;
+                    dbData.rootXPub = rootXPub;
+                    dbData.alias = alias;
+                    dbData.net = net;
                     getDB().then(db => {
                         let transaction = db.transaction(['accounts-server'], 'readwrite');
                         let objectStore = transaction.objectStore('accounts-server');
