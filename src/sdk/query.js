@@ -12,7 +12,7 @@ function querySDK(bytom) {
 querySDK.prototype.asset = function(asset_id) {
     let net = this.bytom.net;
     let retPromise = new Promise((resolve, reject) => {
-        this.http.request('q/asset?asset_id=' + asset_id, null, net, 'GET').then(resp => {
+        this.http.request('q/asset?id=' + asset_id, null, net, 'GET').then(resp => {
             resolve(resp.data);
         }).catch(err => {
             reject(handleAxiosError(err));
@@ -27,7 +27,7 @@ querySDK.prototype.asset = function(asset_id) {
 querySDK.prototype.getblockcount = function() {
     let net = this.bytom.net;
     let retPromise = new Promise((resolve, reject) => {
-        this.http.request('q/getblockcount', null, net, 'GET').then(resp => {
+        this.http.request('q/chain-status', null, net, 'GET').then(resp => {
             resolve(resp.data);
         }).catch(err => {
             reject(handleAxiosError(err));
