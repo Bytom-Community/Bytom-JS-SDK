@@ -56,7 +56,7 @@ transactionSDK.prototype.submitPayment = function(guid, raw_transaction, signatu
     let retPromise = new Promise((resolve, reject) => {
         let pm = {guid: guid, raw_transaction: raw_transaction, signatures: signatures};
         this.http.request('merchant/submit-payment', pm, net).then(resp => {
-            if (resp.status !== 200) {
+            if (resp.status !== 200 || resp.data.code !== 200) {
                 reject(handleApiError(resp));
                 return;
             }
@@ -92,7 +92,7 @@ transactionSDK.prototype.buildPayment = function(guid, to, asset, amount, from, 
             pm.fee = fee;
         }
         this.http.request('merchant/build-payment', pm, net).then(resp => {
-            if (resp.status !== 200) {
+            if (resp.status !== 200 || resp.data.code !== 200) {
                 reject(handleApiError(resp));
                 return;
             }

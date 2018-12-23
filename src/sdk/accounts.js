@@ -74,7 +74,7 @@ accountsSDK.prototype.createAccountReceiverUseServer = function(guid, label) {
             pm.label = label;
         }
         this.http.request('account/new-address', pm, net).then(resp => {
-            if (resp.status !== 200) {
+            if (resp.status !== 200 || resp.data.code !== 200) {
                 reject(handleApiError(resp));
                 return;
             }
@@ -128,7 +128,7 @@ accountsSDK.prototype.createAccountUseServer = function(rootXPub, alias, label) 
                     pm.label = label;
                 }
                 that.http.request('account/create', pm, net).then(resp => {
-                    if (resp.status !== 200) {
+                    if (resp.status !== 200 || resp.data.code !== 200) {
                         reject(handleApiError(resp));
                         return;
                     }
